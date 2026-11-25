@@ -5,9 +5,6 @@ import { useCountUp } from '../hooks/index.js';
 import { EASE, Eyebrow, MaskedLines, Reveal } from './Motion.jsx';
 import ResearchMap from './ResearchMap.jsx';
 import InsightPipeline from './InsightPipeline.jsx';
-import Insights from './Insights.jsx';
-import Deliverables from './Deliverables.jsx';
-import Recommendations from './Recommendations.jsx';
 import Coordination from './Coordination.jsx';
 
 function Stat({ value, label }) {
@@ -68,12 +65,10 @@ function Execution() {
 }
 
 const CHAPTERS = [
-  { id: 'ch-outreach', label: 'Outreach' },
-  { id: 'ch-funnel', label: 'Research' },
-  { id: 'ch-heard', label: 'Insights' },
-  { id: 'ch-built', label: 'Deliverables' },
-  { id: 'ch-recs', label: 'Recommendations' },
-  { id: 'ch-coord', label: 'Coordination' }
+  { id: 'ch-outreach', label: 'Sourcing & scheduling' },
+  { id: 'ch-funnel', label: 'Research flow' },
+  { id: 'ch-coord', label: 'Coordination' },
+  { id: 'ch-execution', label: 'Execution' }
 ];
 
 export default function KiinCaseStudy() {
@@ -119,7 +114,7 @@ export default function KiinCaseStudy() {
         </nav>
       </div>
 
-      <Chapter id="ch-outreach" letter="A" title="Targeted outreach" lede="Click a region to zoom in.">
+      <Chapter id="ch-outreach" letter="A" title="Sourcing & scheduling" lede="Drag the slider to find a slot that works.">
         <ResearchMap />
       </Chapter>
 
@@ -127,23 +122,11 @@ export default function KiinCaseStudy() {
         <InsightPipeline />
       </Chapter>
 
-      <Chapter id="ch-heard" letter="C" title="What the research found" lede="Pick a pain point.">
-        <Insights />
-      </Chapter>
-
-      <Chapter id="ch-built" letter="D" title="What was built" lede="Three deliverables handed to Kiin.">
-        <Deliverables />
-      </Chapter>
-
-      <Chapter id="ch-recs" letter="E" title="Recommendations" lede="Presented to Kiin’s CEO.">
-        <Recommendations />
-      </Chapter>
-
-      <Chapter id="ch-coord" letter="F" title="Project coordination" lede="The weekly rhythm behind a six-person team.">
+      <Chapter id="ch-coord" letter="C" title="Project coordination" lede="The weekly rhythm behind a six-person team.">
         <Coordination />
       </Chapter>
 
-      <Chapter id="ch-execution" letter="G" title="Business execution" lede="Hover or tap each line.">
+      <Chapter id="ch-execution" letter="D" title="Business execution" lede="Hover or tap each line.">
         <Execution />
       </Chapter>
     </section>

@@ -52,7 +52,7 @@ export function buildDots(step = 2.6) {
       for (const s of shapes) {
         if (inside([lon, lat], s.poly)) {
           const [x, y] = project([lon, lat]);
-          dots.push({ x, y, region: s.region ? s.region(lon, lat) : null });
+          dots.push({ x, y, lon, lat, region: s.region ? s.region(lon, lat) : null });
           break;
         }
       }

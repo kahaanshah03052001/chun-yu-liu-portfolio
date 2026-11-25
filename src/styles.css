@@ -620,3 +620,23 @@ html.is-loading, html.is-loading body { overflow: hidden; }
   .recs__tabs button.is-active { padding-left: 16px; background: var(--night-ink); color: var(--night); }
 }
 @media (max-width: 600px) { .map__hint { display: none; } .seg button { padding: 0 16px; } }
+
+/* scheduling overlap bars */
+.sched { margin-top: 6px; }
+.sched__row { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'head overlap' 'bar bar'; gap: 6px 12px; padding: 10px 0; border-top: 1px solid var(--night-line); text-align: left; }
+.sched__row:hover .sched__name { color: #fff; }
+.sched__head { grid-area: head; display: flex; align-items: baseline; gap: 10px; }
+.sched__name { font-size: 15px; font-weight: 500; }
+.sched__time { font: 600 15px var(--display); color: var(--night-muted); font-variant-numeric: tabular-nums; }
+.sched__time.is-ok { color: #7fd3a0; }
+.sched__overlap { grid-area: overlap; font-size: 12px; color: var(--night-muted); align-self: center; white-space: nowrap; }
+.sched__bar { grid-area: bar; position: relative; display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; height: 10px; }
+.sched__bar i, .sched__legend i { display: block; border-radius: 1px; background: #2c2b28; }
+.sched__bar i.is-theirs, .sched__legend i.is-theirs { background: #6b6861; }
+.sched__bar i.is-both, .sched__legend i.is-both { background: var(--accent); }
+.sched__bar b { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--night-ink); transition: left 0.2s var(--ease); }
+.sched__legend { display: flex; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--night-muted); }
+.sched__legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sched__legend i { width: 14px; height: 8px; }
+.tz input[type='range'] { margin-bottom: 4px; }
+@media (min-width: 981px) { .research .map { position: sticky; top: 96px; } }

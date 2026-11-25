@@ -10,6 +10,7 @@ const fmt = (h) => {
   const mm = Math.round((v - hh) * 60);
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 };
+const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const isWorkday = (h) => {
   const v = ((h % 24) + 24) % 24;
   return v >= 8 && v < 18;
@@ -126,9 +127,9 @@ export default function ResearchMap() {
 
   const current = regions.find((r) => r.id === focus);
   const tabs = [{ id: 'world', name: 'World' }, ...regions];
-  const rows = current
-    ? current.countries.map((c) => ({ ...c, region: current.id, label: c.count ? c.name : 'Africa' }))
-    : regions.map((r) => ({ ...r.countries[r.countries.length - 1], name: r.id, region: r.id, label: r.name }));
+  const rows = (current ? [current] : regions).flatMap((r) =>
+    r.countries.map((c) => ({ ...c, region: r.id, label: c.count ? c.name : 'Africa' }))
+  );
 
   return (
     <div className="research">
@@ -221,44 +222,56 @@ export default function ResearchMap() {
             <h4 className="research__region">{current ? current.name : '680 workers'}</h4>
             <div className="research__nums">
               <span><strong>{current ? current.countries.reduce((n, c) => n + c.count, 0) : 12}</strong> interviews</span>
-              <span><strong>{current ? `${current.survey}%` : 13}</strong> {current ? 'of questionnaires' : 'questionnaires'}</span>
+              <span><strong>{current ? current.countries.filter((c) => c.count).length : 6}</strong> countries</span>
             </div>
-            <p className="research__line">{current ? current.heard : 'Hover a region to see who was interviewed.'}</p>
+            <p className="research__line">{current ? 'Each interview booked around both time zones.' : 'Found on LinkedIn Sales Navigator, booked across time zones.'}</p>
           </motion.div>
         </AnimatePresence>
 
         <div className="tz">
           <label htmlFor="tz-slider" className="tz__label">
-            Drag to book a call from Lehi
+            Interview time in Lehi
             <output htmlFor="tz-slider" className="tz__value">{fmt(hour)}</output>
           </label>
           <input
             id="tz-slider"
             type="range"
-            min="5"
-            max="21"
+            min="0"
+            max="23.5"
             step="0.5"
             value={hour}
             onChange={(e) => setHour(Number(e.target.value))}
             aria-valuetext={`${fmt(hour)} in Lehi`}
           />
-          <ul className="tz__list">
+          <ul className="sched">
             {rows.map((c) => {
               const local = hour + (c.offset - origin.offset);
               const ok = isWorkday(local);
+              const overlap = HOURS.filter((h) => isWorkday(h) && isWorkday(h + c.offset - origin.offset)).length;
               return (
-                <li key={c.name} className="is-active">
-                  <button type="button" className="tz__row" onClick={() => setView(c.region)} aria-label={`Zoom to ${c.label}`}>
-                    <span className="tz__name">{c.label}</span>
-                    <span className="tz__time">{fmt(local)}</span>
-                    <span className={`tz__state ${ok ? 'is-ok' : 'is-off'}`} aria-label={ok ? 'Working hours' : 'Off hours'} />
+                <li key={c.name}>
+                  <button type="button" className="sched__row" onClick={() => setView(c.region)} aria-label={`${c.label}: ${fmt(local)} local, ${overlap} hours of shared working time`}>
+                    <span className="sched__head">
+                      <span className="sched__name">{c.label}</span>
+                      <span className={`sched__time ${ok ? 'is-ok' : ''}`}>{fmt(local)}</span>
+                    </span>
+                    <span className="sched__bar" aria-hidden="true">
+                      {HOURS.map((h) => {
+                        const theirs = isWorkday(h + c.offset - origin.offset);
+                        const both = theirs && isWorkday(h);
+                        return <i key={h} className={both ? 'is-both' : theirs ? 'is-theirs' : undefined} />;
+                      })}
+                      <b style={{ left: `${(hour / 24) * 100}%` }} />
+                    </span>
+                    <span className="sched__overlap">{overlap ? `${overlap}h shared` : 'No overlap'}</span>
                   </button>
                 </li>
               );
             })}
           </ul>
-          <p className="tz__score" aria-live="polite">
-            {rows.filter((c) => isWorkday(hour + c.offset - origin.offset)).length} of {rows.length} in working hours
+          <p className="sched__legend" aria-hidden="true">
+            <span><i className="is-theirs" /> Their workday</span>
+            <span><i className="is-both" /> Shared with Lehi</span>
           </p>
         </div>
       </div>

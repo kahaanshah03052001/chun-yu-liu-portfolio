@@ -29,15 +29,14 @@ export const kiin = {
   program: 'Thunderbird Global Challenge Lab',
   location: 'Lehi, Utah',
   duration: 'Oct to Nov 2025',
-  summary: 'International outreach, research, campaign concepts and recommendations for a global payroll and hiring platform.',
+  summary: 'Sourcing, outreach and interview scheduling across three continents, from the first LinkedIn message to the CEO presentation.',
   team: 'Six-person Thunderbird Global Challenge Lab team',
   stats: [
     { value: 680, label: 'International workers reached' },
-    { value: 12, label: 'Interviews conducted' },
-    { value: 13, label: 'Questionnaires completed' },
+    { value: 12, label: 'Interviews scheduled' },
+    { value: 6, label: 'Countries across time zones' },
     { value: 6, label: 'Person team coordinated' }
   ],
-  scope: ['Targeted outreach', 'Content database', 'Proof of concept', 'Campaign consultation']
 };
 
 // Interview and questionnaire data from the final deliverable.
@@ -79,70 +78,10 @@ export const regions = [
 export const origin = { name: 'Lehi, Utah', coord: [-111.85, 40.39], offset: -7, offsetLabel: 'UTC−7' };
 
 export const pipeline = [
-  { key: 'reach', figure: '680', small: 'Reached', title: 'Targeted outreach', body: 'International workers at U.S. and Utah based companies, found through LinkedIn Sales Navigator.' },
-  { key: 'listen', figure: '25', small: 'Responses', title: 'Listen', body: '12 recorded interviews and 13 completed questionnaires.' },
-  { key: 'synthesize', figure: '2', small: 'Friction types', title: 'Synthesize', body: 'Every pain point sorted into operational friction or cultural friction.' },
-  { key: 'present', figure: 'CEO', small: 'Recommendations', title: 'Present', body: 'Branding, design, campaign and outreach recommendations for Kiin’s leadership.' }
-];
-
-export const friction = {
-  operational: [
-    { label: 'Time zones', detail: 'The most common pain point. Meetings land at difficult hours.' },
-    { label: 'Onboarding complexity' },
-    { label: 'Unclear employment status' },
-    { label: 'Compliance confusion' },
-    { label: 'Payment delays' }
-  ],
-  cultural: [
-    { label: 'Direct vs indirect', detail: 'The biggest cultural gap. In Mexico and parts of Asia, people avoid saying “no”.' },
-    { label: 'Hierarchy', detail: 'Decision-making expectations often contrast across teams.' },
-    { label: 'After-hours messages', detail: 'Work-life boundaries vary most around after-hours communication.' },
-    { label: 'Relationship-building', detail: 'Often downplayed in global teams.' }
-  ]
-};
-
-export const findings = [
-  { figure: '53.8%', label: 'of respondents are mid to senior level' },
-  { figure: 'Moderate to high', label: 'impact on productivity' },
-  { figure: 'Time zones', label: 'accepted by most, still the top stressor' }
-];
-
-export const database = [
-  { key: 'assets', title: 'Asset library', items: ['Billboard mockups', 'Kiin creative brief', 'Kiin animation graphics'] },
-  { key: 'videos', title: 'Interview videos', items: ['Full interview footage', 'Highlight clips', 'Sorted by country'] },
-  { key: 'decks', title: 'Presentation decks', items: ['Every deck shared with Kiin', 'Across the project timeline'] },
-  { key: 'surveys', title: 'Survey results', items: ['Global Worker Insights survey', 'Kiin Brand Drive survey'] }
-];
-
-export const gallery = [
-  { img: 'payrollPerson', title: 'Behind every payroll is a person.', type: 'Billboard' },
-  { img: 'movePeople', title: 'We move people, not just payroll.', type: 'Billboard' },
-  { img: 'beGlobal', title: 'Be Kiin, be Global.', type: 'Billboard' },
-  { img: 'stayKiin', title: '#StayKiin', type: 'Billboard' },
-  { img: 'globalManager', title: 'Dear Global Manager', type: 'Website campaign' },
-  { img: 'featureCandidate', title: 'Feature Candidate Program', type: 'Website campaign' },
-  { img: 'moodboard', title: 'Brand moodboard', type: 'Moodboard' }
-];
-
-export const consulting = [
-  { title: 'Landor Brand Driver', body: 'A brand audit framework adapted for Kiin to align the team on values, tone and identity.' },
-  { title: 'Graphic design', body: 'Designer candidate reviews and style direction from competitor analysis.' },
-  { title: 'Campaign guide deck', body: 'Objective, differentiators, channel snapshot, pillar framework and strategy by region.' }
-];
-
-export const recommendations = [
-  { key: 'branding', title: 'Branding', points: ['Align verbal and visual brand drivers across the team.', 'Focus on brand awareness at this early stage.'] },
-  { key: 'design', title: 'Design', points: ['Decide on a design style early, especially UI.', 'Use more human photos and illustration.', 'Give designers a one to two page creative brief.'] },
-  { key: 'campaign', title: 'Campaign', points: ['Low effort, high impact: “Who we are”, memes, taglines.', 'Quantity and consistency first.', 'Restart LinkedIn and Instagram, explore WhatsApp.'] },
-  {
-    key: 'outreach',
-    title: 'Outreach',
-    variants: {
-      General: ['Start with a warm, curated group.', 'Build a Sales Navigator workflow.', 'Propose times in the lead’s time zone.'],
-      LATAM: ['Build rapport before business.', 'Ask clarifying questions; “no” is not always direct.', 'Use bilingual messaging.'],
-      Asia: ['Respect hierarchy in communication.', 'Use preferred regional channels, not only LinkedIn.', 'Invite input openly.']
-    }
-  }
+  { key: 'reach', figure: '680', small: 'Reached', title: 'Source', body: 'International workers found and contacted through LinkedIn Sales Navigator.' },
+  { key: 'listen', figure: '12', small: 'Scheduled', title: 'Schedule', body: '12 interviews booked across time zones, plus 13 questionnaires.' },
+  { key: 'synthesize', figure: '2', small: 'Themes', title: 'Synthesize', body: 'Findings sorted into operational and cultural friction.' },
+  { key: 'present', figure: 'CEO', small: 'Presented', title: 'Present', body: 'Recommendations delivered to Kiin’s CEO.' }
 ];
 
 export const rhythm = [
@@ -153,19 +92,18 @@ export const rhythm = [
 ];
 
 export const trackerRows = [
-  { item: 'Targeted outreach', detail: '680 reached' },
-  { item: 'Interviews', detail: '12 completed' },
+  { item: 'Outreach', detail: '680 contacted' },
+  { item: 'Interview scheduling', detail: '12 booked, 6 countries' },
   { item: 'Questionnaires', detail: '13 completed' },
-  { item: 'Content database', detail: '4 libraries' },
-  { item: 'Proof of concept', detail: 'Billboards · web · reel' },
-  { item: 'Recommendations', detail: 'Presented to CEO' }
+  { item: 'Weekly status report', detail: 'Progress and timelines' },
+  { item: 'CEO presentation', detail: 'Recommendations' }
 ];
 
 export const execution = [
-  { title: 'Coordinate people.', evidence: 'Six teammates, 680 people reached, three regions.' },
-  { title: 'Organize information.', evidence: 'A four-part content database built for Kiin.' },
+  { title: 'Coordinate people.', evidence: '12 interviews booked across 6 countries and a six-person team.' },
+  { title: 'Organize information.', evidence: 'Milestones and action items tracked in Excel and Sheets.' },
   { title: 'Manage deadlines.', evidence: 'Weekly follow-ups and status reports.' },
-  { title: 'Structure recommendations.', evidence: '25 responses into a CEO presentation.' }
+  { title: 'Deliver results.', evidence: 'Research carried from first contact to the CEO.' }
 ];
 
 export const projects = [
