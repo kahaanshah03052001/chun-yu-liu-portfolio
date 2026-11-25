@@ -4,18 +4,6 @@ import { origin, regions } from '../data/content.js';
 import { MAP, buildDots, project } from '../data/geo.js';
 import { EASE } from './Motion.jsx';
 
-const fmt = (h) => {
-  const v = ((h % 24) + 24) % 24;
-  const hh = Math.floor(v);
-  const mm = Math.round((v - hh) * 60);
-  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-};
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-const isWorkday = (h) => {
-  const v = ((h % 24) + 24) % 24;
-  return v >= 8 && v < 18;
-};
-
 // Zoom frames in lon/lat: [west, north, east, south]
 const FRAMES = {
   world: [-180, MAP.latTop, 180, MAP.latBottom],
@@ -49,7 +37,6 @@ export default function ResearchMap() {
   const dots = useMemo(() => buildDots(), []);
   const [view, setView] = useState('world'); // world | region id
   const [hover, setHover] = useState(null);
-  const [hour, setHour] = useState(9);
   const svgRef = useRef(null);
   const gRef = useRef(null);
   const boxRef = useRef(frameToBox('world'));
@@ -127,9 +114,6 @@ export default function ResearchMap() {
 
   const current = regions.find((r) => r.id === focus);
   const tabs = [{ id: 'world', name: 'World' }, ...regions];
-  const rows = (current ? [current] : regions).flatMap((r) =>
-    r.countries.map((c) => ({ ...c, region: r.id, label: c.count ? c.name : 'Africa' }))
-  );
 
   return (
     <div className="research">
@@ -228,52 +212,6 @@ export default function ResearchMap() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="tz">
-          <label htmlFor="tz-slider" className="tz__label">
-            Interview time in Lehi
-            <output htmlFor="tz-slider" className="tz__value">{fmt(hour)}</output>
-          </label>
-          <input
-            id="tz-slider"
-            type="range"
-            min="0"
-            max="23.5"
-            step="0.5"
-            value={hour}
-            onChange={(e) => setHour(Number(e.target.value))}
-            aria-valuetext={`${fmt(hour)} in Lehi`}
-          />
-          <ul className="sched">
-            {rows.map((c) => {
-              const local = hour + (c.offset - origin.offset);
-              const ok = isWorkday(local);
-              const overlap = HOURS.filter((h) => isWorkday(h) && isWorkday(h + c.offset - origin.offset)).length;
-              return (
-                <li key={c.name}>
-                  <button type="button" className="sched__row" onClick={() => setView(c.region)} aria-label={`${c.label}: ${fmt(local)} local, ${overlap} hours of shared working time`}>
-                    <span className="sched__head">
-                      <span className="sched__name">{c.label}</span>
-                      <span className={`sched__time ${ok ? 'is-ok' : ''}`}>{fmt(local)}</span>
-                    </span>
-                    <span className="sched__bar" aria-hidden="true">
-                      {HOURS.map((h) => {
-                        const theirs = isWorkday(h + c.offset - origin.offset);
-                        const both = theirs && isWorkday(h);
-                        return <i key={h} className={both ? 'is-both' : theirs ? 'is-theirs' : undefined} />;
-                      })}
-                      <b style={{ left: `${(hour / 24) * 100}%` }} />
-                    </span>
-                    <span className="sched__overlap">{overlap ? `${overlap}h shared` : 'No overlap'}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="sched__legend" aria-hidden="true">
-            <span><i className="is-theirs" /> Their workday</span>
-            <span><i className="is-both" /> Shared with Lehi</span>
-          </p>
-        </div>
       </div>
     </div>
   );

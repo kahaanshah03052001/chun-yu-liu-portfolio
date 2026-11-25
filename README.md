@@ -36,7 +36,7 @@ To change wording, edit `content.js` only; every component reads from it.
 - **Intro** (React Three Fiber, about 2.5 s): a 3D dot globe of the world map turns from Lehi toward the interview countries while red arcs draw out, then glides into the portrait's position and becomes its black circle. Falls back to loading the page directly when WebGL or reduced motion rules it out; never holds the page longer than 5 s.
 
 - **Hero**: headline, portrait, introduction, location, languages, live Phoenix time, availability.
-- **Kiin Global case study**: A. Sourcing & scheduling (zoomable map with interview counts, plus a time-zone overlap scheduler per country), B. From 680 to the CEO, C. Project coordination, D. Business execution.
+- **Kiin Global case study**: A. Sourcing & scheduling (zoomable map with interview counts by country), B. From 680 to the CEO, C. Project coordination, D. Business execution.
 - **Site-wide**: custom cursor on desktop, magnetic call-to-action, 3D tilt on the portrait, outline effect on the headline words.
 - **Projects**: accessible accordion for the KFC survey, customer experience modeling and camp counselor role.
 - **Skills**: keyboard-navigable skill groups with linked evidence.

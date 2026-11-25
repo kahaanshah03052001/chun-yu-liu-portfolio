@@ -114,7 +114,7 @@ export default function KiinCaseStudy() {
         </nav>
       </div>
 
-      <Chapter id="ch-outreach" letter="A" title="Sourcing & scheduling" lede="Drag the slider to find a slot that works.">
+      <Chapter id="ch-outreach" letter="A" title="Sourcing & scheduling" lede="Click a region to zoom in.">
         <ResearchMap />
       </Chapter>
 
