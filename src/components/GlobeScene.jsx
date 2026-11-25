@@ -159,10 +159,10 @@ function Globe({ start }) {
   return (
     <group ref={group}>
       <points ref={shell} geometry={shellGeo}>
-        <pointsMaterial color={INK} size={0.012} sizeAttenuation transparent opacity={0} depthWrite={false} />
+        <pointsMaterial color={INK} size={0.03} sizeAttenuation transparent opacity={0} depthWrite={false} />
       </points>
       <points ref={land} geometry={landGeo}>
-        <pointsMaterial vertexColors size={0.022} sizeAttenuation transparent opacity={0} depthWrite={false} />
+        <pointsMaterial vertexColors size={0.06} sizeAttenuation transparent opacity={0} depthWrite={false} />
       </points>
       {arcs.map((line, i) => (
         <primitive key={i} object={line} ref={(el) => (arcRefs.current[i] = el)} />
