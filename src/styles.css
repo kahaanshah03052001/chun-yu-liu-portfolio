@@ -485,7 +485,7 @@ ul, ol { padding: 0; list-style: none; }
 
 /* ---------- Intro loader ---------- */
 html.is-loading, html.is-loading body { overflow: hidden; }
-.loader { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow: hidden; cursor: pointer; transition: opacity 0.7s var(--ease); }
+.loader { position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow: hidden; cursor: pointer; transition: opacity 0.45s var(--ease); }
 .loader__canvas { position: absolute; inset: 0; display: block; }
 .loader--fade { opacity: 0; pointer-events: none; }
 

@@ -1,31 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
-import { MAP, buildDots, project } from '../data/geo.js';
-import { origin, regions } from '../data/content.js';
 
 /*
-  Particle intro, no text. On the warm-white page colour, ink particles drift in and
-  settle into the dot-matrix world map used in the case study. Red pins light up the
-  three research regions and arcs fly out from Lehi. The map then collapses into a solid
-  ink disc that lands exactly where the hero portrait sits, and the portrait takes over.
+  Particle intro, no text, about 2.5 seconds.
+  Story: scattered information -> structure -> execution.
+  1. Noise: thousands of ink particles drift in a swirling flow field.
+  2. Structure: they snap onto a precise grid; one row lights up red (clarity).
+  3. Execution: the grid spirals into a dense disc exactly where the hero portrait sits,
+     the disc turns solid and the portrait takes over.
 */
 
-const T_FORM = 1700; // scatter -> world map
-const T_HOLD = 1700; // map holds, arcs draw
-const T_DISC = 1200; // map -> disc at the portrait position
-const T_FADE = 700; // loader fades, portrait appears
+const T_NOISE = 650;
+const T_GRID = 1350;
+const T_DISC = 2150;
+const T_FADE = 450;
 
 const BG = [244, 241, 234];
 const INK = [17, 17, 16];
 const RED = [214, 54, 31];
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+const clamp01 = (t) => Math.min(1, Math.max(0, t));
 
 function portraitTarget(W, H) {
   const el = document.querySelector('.portrait-disc');
   if (el) {
     const r = el.getBoundingClientRect();
-    // the hero portrait starts at scale(0.8); undo that to get its resting size
-    const size = Math.min(r.width, r.height) / 0.8;
+    const size = Math.min(r.width, r.height) / 0.8; // hero portrait starts at scale(0.8)
     if (size > 40) return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, R: size / 2 };
   }
   return { cx: W * 0.72, cy: H * 0.5, R: Math.min(W, H) * 0.25 };
@@ -45,7 +44,6 @@ export default function Loader({ onReveal, onDone }) {
       document.documentElement.classList.remove('is-loading');
       onDone?.();
     };
-
     if (reduce) {
       onReveal?.();
       timers.push(setTimeout(finish, 50));
@@ -63,43 +61,34 @@ export default function Loader({ onReveal, onDone }) {
     canvas.style.height = `${H}px`;
     ctx.scale(dpr, dpr);
 
-    // Fit the world map into the viewport
     const small = W < 700;
-    const mapW = Math.min(W * (small ? 1.12 : 0.9), 1400);
-    const scale = mapW / MAP.width;
-    const mapH = MAP.height * scale;
-    const offX = (W - mapW) / 2;
-    const offY = (H - mapH) / 2;
-    const toScreen = ([x, y]) => [offX + x * scale, offY + y * scale];
-
-    const dots = buildDots(small ? 3.2 : 2.6);
-    const pins = regions.flatMap((r) => r.countries.map((c) => toScreen(project(c.coord))));
-    const lehi = toScreen(project(origin.coord));
+    const N = small ? 1400 : 2800;
+    const gap = small ? 18 : 22; // grid spacing
     const disc = portraitTarget(W, H);
-    const N = dots.length;
+    const redRow = Math.round(disc.cy / gap) * gap; // the "clarity" line runs through the portrait's centre
     const golden = Math.PI * (3 - Math.sqrt(5));
 
-    const particles = dots.map((d, i) => {
-      const [tx, ty] = toScreen([d.x, d.y]);
-      // sunflower packing fills the disc evenly
+    const particles = Array.from({ length: N }, (_, i) => {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const gx = Math.round(x / gap) * gap;
+      const gy = Math.round(y / gap) * gap;
       const rr = Math.sqrt((i + 0.5) / N) * disc.R * 0.97;
       const a = i * golden;
-      const ang = Math.random() * Math.PI * 2;
-      const dist = Math.max(W, H) * (0.55 + Math.random() * 0.4);
       return {
-        x: W / 2 + Math.cos(ang) * dist,
-        y: H / 2 + Math.sin(ang) * dist,
+        x,
+        y,
         vx: 0,
         vy: 0,
-        tx,
-        ty,
+        gx,
+        gy,
         dx: disc.cx + Math.cos(a) * rr,
         dy: disc.cy + Math.sin(a) * rr,
-        red: Boolean(d.region),
-        delay: Math.random() * 600,
-        spin: (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.7),
-        size: (small ? 2.2 : 2.6) * (0.85 + Math.random() * 0.3),
-        seed: Math.random() * 1000
+        red: gy === redRow,
+        delay: Math.random() * 180,
+        spin: (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.6),
+        size: (small ? 1.8 : 2.1) * (0.8 + Math.random() * 0.5),
+        seed: Math.random() * 6.283
       };
     });
 
@@ -110,10 +99,10 @@ export default function Loader({ onReveal, onDone }) {
       pointer.y = t.clientY;
     };
     const start = performance.now();
-    let skipShift = 0;
+    let shift = 0;
     const skip = () => {
-      const t = performance.now() - start + skipShift;
-      if (t < T_FORM + T_HOLD) skipShift += T_FORM + T_HOLD - t;
+      const t = performance.now() - start + shift;
+      if (t < T_GRID) shift += T_GRID - t;
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('touchmove', onMove, { passive: true });
@@ -129,122 +118,87 @@ export default function Loader({ onReveal, onDone }) {
     };
 
     const frame = (now) => {
-      const t = now - start + skipShift;
-      const inDisc = t > T_FORM + T_HOLD;
-      const tDisc = Math.max(0, t - T_FORM - T_HOLD);
-      const discP = Math.min(1, tDisc / T_DISC);
-      if (discP >= 1) fade();
+      const t = now - start + shift;
+      if (t >= T_DISC) fade();
 
-      // soft trails on the page colour
-      ctx.fillStyle = `rgba(${BG[0]},${BG[1]},${BG[2]},0.32)`;
+      ctx.fillStyle = `rgba(${BG[0]},${BG[1]},${BG[2]},0.38)`;
       ctx.fillRect(0, 0, W, H);
 
-      // arcs from Lehi to each interview country while the map holds
-      const holdP = Math.min(1, Math.max(0, (t - T_FORM) / (T_HOLD * 0.7)));
-      if (holdP > 0 && !inDisc) {
-        ctx.lineWidth = 1.4;
-        ctx.strokeStyle = `rgba(${RED[0]},${RED[1]},${RED[2]},0.85)`;
-        pins.forEach(([px, py], i) => {
-          const local = Math.min(1, Math.max(0, holdP * 1.6 - i * 0.1));
-          if (local <= 0) return;
-          const mx = (lehi[0] + px) / 2;
-          const my = Math.min(lehi[1], py) - Math.max(40, Math.abs(px - lehi[0]) * 0.22);
-          ctx.beginPath();
-          const steps = 40;
-          for (let s = 0; s <= steps * local; s++) {
-            const u = s / steps;
-            const x = (1 - u) * (1 - u) * lehi[0] + 2 * (1 - u) * u * mx + u * u * px;
-            const y = (1 - u) * (1 - u) * lehi[1] + 2 * (1 - u) * u * my + u * u * py;
-            if (s === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-          if (local >= 1) {
-            const pulse = 6 + ((now / 18 + i * 20) % 22);
-            ctx.beginPath();
-            ctx.arc(px, py, pulse, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(${RED[0]},${RED[1]},${RED[2]},${0.5 * (1 - (pulse - 6) / 22)})`;
-            ctx.stroke();
-            ctx.strokeStyle = `rgba(${RED[0]},${RED[1]},${RED[2]},0.85)`;
-            ctx.beginPath();
-            ctx.arc(px, py, 4.5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgb(${RED[0]},${RED[1]},${RED[2]})`;
-            ctx.fill();
-          }
-        });
-        ctx.beginPath();
-        ctx.arc(lehi[0], lehi[1], 5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgb(${INK[0]},${INK[1]},${INK[2]})`;
-        ctx.fill();
+      const gridP = clamp01((t - T_NOISE) / (T_GRID - T_NOISE));
+      const discP = clamp01((t - T_GRID) / (T_DISC - T_GRID));
+
+      // the red "clarity" rule draws across once the grid locks
+      if (gridP > 0.6 && discP < 0.5) {
+        const w = W * easeInOut(clamp01((gridP - 0.6) / 0.4));
+        ctx.fillStyle = `rgba(${RED[0]},${RED[1]},${RED[2]},${0.9 * (1 - discP * 2)})`;
+        ctx.fillRect(0, redRow - 0.75, w, 1.5);
       }
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        let gx;
-        let gy;
-        let k;
-        if (!inDisc) {
-          const local = Math.max(0, t - p.delay);
-          const prog = Math.min(1, local / (T_FORM - 200));
-          gx = p.tx + (t > T_FORM ? Math.sin(now * 0.0015 + p.seed) * 0.8 : 0);
-          gy = p.ty + (t > T_FORM ? Math.cos(now * 0.0012 + p.seed) * 0.8 : 0);
-          k = 0.01 + easeInOut(prog) * 0.09;
-          const ddx = gx - p.x;
-          const ddy = gy - p.y;
-          const dist = Math.hypot(ddx, ddy) || 1;
-          const swirl = Math.min(dist / 260, 1.5) * (1 - prog * 0.9) * p.spin;
-          p.vx += (-ddy / dist) * swirl;
-          p.vy += (ddx / dist) * swirl;
+        if (t - p.delay < T_NOISE) {
+          // flow field: smooth swirling noise
+          const ang = Math.sin(p.x * 0.005 + now * 0.0011) * Math.cos(p.y * 0.006 - now * 0.0009) * 6.283 + p.seed * 0.15;
+          p.vx += Math.cos(ang) * 0.55;
+          p.vy += Math.sin(ang) * 0.55;
+          p.vx *= 0.9;
+          p.vy *= 0.9;
         } else {
-          const e = easeInOut(discP);
-          gx = p.tx + (p.dx - p.tx) * e;
-          gy = p.ty + (p.dy - p.ty) * e;
-          k = 0.08 + e * 0.12;
-          const ddx = gx - p.x;
-          const ddy = gy - p.y;
-          const dist = Math.hypot(ddx, ddy) || 1;
-          const swirl = Math.min(dist / 200, 1.2) * (1 - e) * p.spin * 1.4;
-          p.vx += (-ddy / dist) * swirl;
-          p.vy += (ddx / dist) * swirl;
+          let tx;
+          let ty;
+          let k;
+          if (discP <= 0) {
+            tx = p.gx;
+            ty = p.gy;
+            k = 0.05 + easeInOut(gridP) * 0.2;
+          } else {
+            const e = easeInOut(discP);
+            tx = p.gx + (p.dx - p.gx) * e;
+            ty = p.gy + (p.dy - p.gy) * e;
+            k = 0.12 + e * 0.15;
+            const ddx = tx - p.x;
+            const ddy = ty - p.y;
+            const dist = Math.hypot(ddx, ddy) || 1;
+            const swirl = Math.min(dist / 140, 1.6) * (1 - e) * p.spin * 2;
+            p.vx += (-ddy / dist) * swirl;
+            p.vy += (ddx / dist) * swirl;
+          }
+          p.vx += (tx - p.x) * k;
+          p.vy += (ty - p.y) * k;
+          p.vx *= 0.72;
+          p.vy *= 0.72;
         }
 
         const px = p.x - pointer.x;
         const py = p.y - pointer.y;
         const pd = px * px + py * py;
-        if (pd < 12100 && !inDisc) {
+        if (pd < 10000 && discP < 0.3) {
           const d = Math.sqrt(pd) || 1;
-          const f = (1 - d / 110) * 5;
+          const f = (1 - d / 100) * 4;
           p.vx += (px / d) * f;
           p.vy += (py / d) * f;
         }
 
-        p.vx += (gx - p.x) * k;
-        p.vy += (gy - p.y) * k;
-        p.vx *= 0.8;
-        p.vy *= 0.8;
         p.x += p.vx;
         p.y += p.vy;
 
-        const speed = Math.min(1, Math.hypot(p.vx, p.vy) / 12);
-        const showRed = p.red && t > T_FORM * 0.8 && !inDisc;
-        const c = showRed ? RED : INK;
-        const s = p.size * (1 + speed * 0.6) * (inDisc ? 1 + discP * 0.9 : 1);
-        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.55 + (1 - speed) * 0.4})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, s / 2, 0, Math.PI * 2);
-        ctx.fill();
+        const speed = Math.min(1, Math.hypot(p.vx, p.vy) / 10);
+        const c = p.red && gridP > 0.5 && discP < 0.6 ? RED : INK;
+        const s = p.size * (1 + speed * 0.7) * (1 + discP * 0.8);
+        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.5 + (1 - speed) * 0.45})`;
+        ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
       }
 
-      // the disc solidifies into the portrait's black circle
-      if (inDisc && discP > 0.55) {
-        const a = easeOut((discP - 0.55) / 0.45);
+      // disc turns solid: the portrait's black circle
+      if (discP > 0.6) {
+        const a = clamp01((discP - 0.6) / 0.4);
         ctx.beginPath();
-        ctx.arc(disc.cx, disc.cy, disc.R * (0.9 + 0.1 * a), 0, Math.PI * 2);
+        ctx.arc(disc.cx, disc.cy, disc.R * (0.92 + 0.08 * a), 0, Math.PI * 2);
         ctx.fillStyle = `rgba(12,12,13,${a})`;
         ctx.fill();
       }
 
-      if (!done || now - start < T_FORM + T_HOLD + T_DISC + T_FADE + 200) raf = requestAnimationFrame(frame);
+      if (!done || now - start < T_DISC + T_FADE + 100) raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
 
